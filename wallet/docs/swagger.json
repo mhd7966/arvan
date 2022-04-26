@@ -1,0 +1,157 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "I have no specific description",
+        "title": "Wallet API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "email": "fiber@swagger.io"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "basePath": "/v0",
+    "paths": {
+        "/transaction": {
+            "post": {
+                "description": "charge code",
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "charge",
+                "operationId": "charge",
+                "parameters": [
+                    {
+                        "description": "charge body",
+                        "name": "charge",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/inputs.Charge"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "json"
+                        }
+                    }
+                }
+            }
+        },
+        "/transaction/{phone_number}": {
+            "get": {
+                "description": "history",
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "history",
+                "operationId": "history",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "phone number of user",
+                        "name": "phone_number",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "json"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/{phone_number}": {
+            "get": {
+                "description": "return user",
+                "tags": [
+                    "User"
+                ],
+                "summary": "get user",
+                "operationId": "get_user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "phone number of user",
+                        "name": "phone_number",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "json"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "inputs.Charge": {
+            "type": "object",
+            "required": [
+                "code",
+                "code_type",
+                "phone_number"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "code_type": {
+                    "type": "integer",
+                    "default": 1
+                },
+                "phone_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Response": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "object"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

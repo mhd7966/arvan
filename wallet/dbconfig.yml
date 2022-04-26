@@ -1,0 +1,4 @@
+development:
+    dialect: postgres
+    datasource: host=localhost dbname=wallet user=admin password=admin sslmode=disable
+    dir: migrations

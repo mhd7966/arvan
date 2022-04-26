@@ -1,0 +1,34 @@
+version: "2.4"
+
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    pid: "host"
+    network_mode: "host"
+    environment:   
+      - TZ=Asia/Tehran
+      - PG_HOST=localhost
+      - PG_PORT=5431
+      - PG_NAME=code
+      - PG_USER=admin
+      - PG_PASS=admin
+      - LOG_LEVEL=debug
+      - LOG_OUTPUT_TYPE=stdout
+      - LOG_FILE_Add=/log.txt
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:alpine3.14
+    ports:
+      - "5431:5432"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=code
+    volumes:
+      - ~/dockerv/postgres2:/var/lib/postgresql/data
