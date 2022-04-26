@@ -1,0 +1,35 @@
+version: "2.4"
+
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    pid: "host"
+    network_mode: "host"
+    environment:   
+      - TZ=Asia/Tehran
+      - PG_HOST=localhost
+      - PG_PORT=5432
+      - PG_NAME=wallet
+      - PG_USER=admin
+      - PG_PASS=admin
+      - LOG_LEVEL=debug
+      - LOG_OUTPUT_TYPE=stdout
+      - LOG_FILE_Add=/log.txt
+      - CODESERVICE_HOST=127.0.0.1:3001
+    depends_on:
+      - postgres
+
+  postgres:
+    image: registry.docker.ir/library/postgres:alpine3.14
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=wallet
+    volumes:
+      - ~/dockerv/postgres:/var/lib/postgresql/data
