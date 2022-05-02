@@ -6,7 +6,6 @@ import (
 	_ "github.com/mhd7966/arvan/wallet/docs"
 	"github.com/mhd7966/arvan/wallet/log"
 	"github.com/mhd7966/arvan/wallet/routes"
-	sentryfiber "github.com/aldy505/sentry-fiber"
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
 )
@@ -32,14 +31,6 @@ func main() {
 
 	app := fiber.New(fiber.Config{
 		Prefork: true,
-		ErrorHandler: func(c *fiber.Ctx, e error) error {
-			hub := sentryfiber.GetHubFromContext(c)
-			if hub == nil {
-				return fiber.DefaultErrorHandler(c, e)
-			}
-			hub.CaptureException(e)
-			return nil
-		},
 	})
 
 	app.Get("/docs/*", swagger.HandlerDefault)

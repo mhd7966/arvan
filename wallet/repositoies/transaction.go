@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"github.com/mhd7966/arvan/wallet/connections"
+	"github.com/mhd7966/arvan/wallet/inputs"
 	"github.com/mhd7966/arvan/wallet/log"
 	"github.com/mhd7966/arvan/wallet/models"
 )
@@ -17,11 +18,13 @@ func ExistTransaction(phoneNumber string, code string) (bool, error) {
 	return true, nil
 }
 
-func GetTransactions(phoneNumber string) ([]models.Transaction, error) {
+func GetTransactions(phoneNumber string, page inputs.GetTransactionsPagination) ([]models.Transaction, error) {
 	var transactions []models.Transaction
 
+	offset := (page.Page - 1) * page.Size
+
 	if result := connections.DB.Joins("JOIN users on transactions.user_id=users.id").
-		Where("users.phone_number=?", phoneNumber).Find(&transactions); result.Error != nil {
+		Where("users.phone_number=?", phoneNumber).Order("created_at DESC").Offset(offset).Limit(page.Size).Find(&transactions); result.Error != nil {
 		return nil, result.Error
 	}
 

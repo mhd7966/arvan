@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/mhd7966/arvan/code/connections"
@@ -16,7 +15,6 @@ func GetCharge(chargeCode string) (*models.ChargeCode, error) {
 	if result := connections.DB.Debug().Where("name = ?", chargeCode).Find(&charge); result.Error != nil {
 		return nil, result.Error
 	}
-	fmt.Println(charge)
 
 	return &charge, nil
 }
