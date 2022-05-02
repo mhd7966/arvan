@@ -8,20 +8,20 @@ $ go get -u github.com/swaggo/swag/cmd/swag
 
  Swagger init changes, run in main project directory : 
 ```sh
-  swag init
+$ swag init
 ```
 
   To run program : 
 ```sh
-    docker-compose up
+$ docker-compose up
 ```
 
   For running migration, run this command (Note: The database must be up):
 ```sh
-    go get -v github.com/rubenv/sql-migrate/...
+$ go get -v github.com/rubenv/sql-migrate/...
 ```
   then:
 ```sh
-    sql-migrate up
+$ sql-migrate up
 ```
 
