@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -87,14 +86,7 @@ func NewChargeCode(c *fiber.Ctx) error {
 	if err := validate.Struct(chargeCodeBody); err != nil {
 		validateError := "error : "
 		for _, err := range err.(validator.ValidationErrors) {
-			fmt.Println(err.StructField())
-			fmt.Println(err.ActualTag())
-			fmt.Println(err.Kind())
-			fmt.Println(err.Value())
-			fmt.Println(err.Param())
 			validateError += err.StructField() + ", "
-			fmt.Println(validateError)
-			fmt.Println("---------------")
 		}
 		response.Message = "Validate Charge Info Failed"
 		response.Data = validateError

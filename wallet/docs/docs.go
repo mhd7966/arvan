@@ -77,6 +77,18 @@ var doc = `{
                 "operationId": "get_transactions",
                 "parameters": [
                     {
+                        "type": "integer",
+                        "default": 1,
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "phone number of user",
                         "name": "phone_number",
@@ -147,6 +159,19 @@ var doc = `{
                 },
                 "phone_number": {
                     "type": "string"
+                }
+            }
+        },
+        "inputs.GetTransactionsPagination": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer",
+                    "default": 1
+                },
+                "size": {
+                    "type": "integer",
+                    "default": 10
                 }
             }
         },

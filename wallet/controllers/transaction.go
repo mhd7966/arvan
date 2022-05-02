@@ -140,6 +140,7 @@ func Charge(c *fiber.Ctx) error {
 // @Description get transactions
 // @ID get_transactions
 // @Tags Transaction
+// @Param page query inputs.GetTransactionsPagination true "page and size"
 // @Param phone_number path string true "phone number of user"
 // @Success 200 {object} models.Response
 // @Failure 400 json httputil.HTTPError
@@ -150,11 +151,21 @@ func GetTransactions(c *fiber.Ctx) error {
 	response.Status = "error"
 	phoneNumber := c.Params("phone_number")
 
+	var query inputs.GetTransactionsPagination
+	if err := c.QueryParser(&query); err != nil {
+		response.Message = "Get Query Body Failed!"
+		log.Log.WithFields(logrus.Fields{
+			"response": response.Message,
+			"error":    err.Error(),
+		}).Error("getTransactions. Get transactions query body failed!")
+		return c.Status(fiber.StatusBadRequest).JSON(response)
+	}
+
 	if valid := ValidationPhoneNumber(phoneNumber); !valid {
 		response.Message = "Not Valid PhoneNumber "
 		log.Log.WithFields(logrus.Fields{
 			"phone_number": phoneNumber,
-		}).Info("Charge. PhoneNumber isn't valid !")
+		}).Info("getTransactions. PhoneNumber isn't valid !")
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 
@@ -167,7 +178,7 @@ func GetTransactions(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 
-	transactions, err := repositories.GetTransactions(phoneNumber)
+	transactions, err := repositories.GetTransactions(phoneNumber, query)
 	if err != nil {
 		response.Message = "Get Transaction History Failed"
 		log.Log.WithFields(logrus.Fields{

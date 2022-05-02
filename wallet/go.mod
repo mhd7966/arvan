@@ -3,7 +3,7 @@ module github.com/mhd7966/arvan/wallet
 go 1.16
 
 require (
-	github.com/aldy505/sentry-fiber v0.0.1
+	github.com/aldy505/sentry-fiber v0.0.1 // indirect
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/arsmn/fiber-swagger/v2 v2.31.1
 	github.com/gofiber/fiber/v2 v2.32.0

@@ -8,7 +8,6 @@ github.com/PuerkitoBio/purell
 github.com/PuerkitoBio/urlesc
 # github.com/aldy505/sentry-fiber v0.0.1
 ## explicit
-github.com/aldy505/sentry-fiber
 # github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 ## explicit
 github.com/alecthomas/template
@@ -18,11 +17,6 @@ github.com/andybalholm/brotli
 # github.com/arsmn/fiber-swagger/v2 v2.31.1
 ## explicit
 github.com/arsmn/fiber-swagger/v2
-# github.com/getsentry/sentry-go v0.11.0
-github.com/getsentry/sentry-go
-github.com/getsentry/sentry-go/internal/crypto/randutil
-github.com/getsentry/sentry-go/internal/debug
-github.com/getsentry/sentry-go/internal/ratelimit
 # github.com/go-openapi/jsonpointer v0.19.5
 github.com/go-openapi/jsonpointer
 # github.com/go-openapi/jsonreference v0.19.6
