@@ -1,7 +1,7 @@
 -- +migrate Up
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
-  phone_number TEXT,
+  phone_number TEXT UNIQUE,
   balance INT,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW(),

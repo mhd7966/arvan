@@ -32,4 +32,4 @@ services:
       - POSTGRES_PASSWORD=admin
       - POSTGRES_DB=wallet
     volumes:
-      - ~/dockerv/postgres:/var/lib/postgresql/data
+      - ~/dockerv/postgres3:/var/lib/postgresql/data

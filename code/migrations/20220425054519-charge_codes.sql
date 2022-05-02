@@ -1,7 +1,7 @@
 -- +migrate Up
 CREATE TABLE charge_codes (
   id SERIAL PRIMARY KEY,
-  name TEXT,
+  name TEXT UNIQUE,
   value INT,
   capacity INT,
   max_capacity INT,

@@ -11,6 +11,6 @@ type ChargeCode struct {
 	Name           string    `json:"name"`
 	Value          int       `json:"value"`
 	Capacity       int       `json:"capacity" default:"0"`
-	MaxCapacity       int       `json:"max_capacity"`
+	MaxCapacity    int       `json:"max_capacity"`
 	ExpirationDate time.Time `json:"expiration_date"`
 }

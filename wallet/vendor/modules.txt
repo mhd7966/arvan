@@ -9,6 +9,10 @@ github.com/PuerkitoBio/urlesc
 # github.com/aldy505/sentry-fiber v0.0.1
 ## explicit
 github.com/aldy505/sentry-fiber
+# github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
+## explicit
+github.com/alecthomas/template
+github.com/alecthomas/template/parse
 # github.com/andybalholm/brotli v1.0.4
 github.com/andybalholm/brotli
 # github.com/arsmn/fiber-swagger/v2 v2.31.1

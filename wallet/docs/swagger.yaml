@@ -9,10 +9,6 @@ definitions:
         type: integer
       phone_number:
         type: string
-    required:
-    - code
-    - code_type
-    - phone_number
     type: object
   models.Response:
     properties:
@@ -35,7 +31,7 @@ info:
   title: Wallet API
   version: "1.0"
 paths:
-  /transaction:
+  /transactions:
     post:
       description: charge code
       operationId: charge
@@ -58,10 +54,10 @@ paths:
       summary: charge
       tags:
       - Transaction
-  /transaction/{phone_number}:
+  /transactions/{phone_number}:
     get:
-      description: history
-      operationId: history
+      description: get transactions
+      operationId: get_transactions
       parameters:
       - description: phone number of user
         in: path
@@ -77,10 +73,10 @@ paths:
           description: Bad Request
           schema:
             type: json
-      summary: history
+      summary: get transactions
       tags:
       - Transaction
-  /user/{phone_number}:
+  /users/{phone_number}:
     get:
       description: return user
       operationId: get_user

@@ -16,7 +16,7 @@
     },
     "basePath": "/v0",
     "paths": {
-        "/transaction": {
+        "/transactions": {
             "post": {
                 "description": "charge code",
                 "tags": [
@@ -51,14 +51,14 @@
                 }
             }
         },
-        "/transaction/{phone_number}": {
+        "/transactions/{phone_number}": {
             "get": {
-                "description": "history",
+                "description": "get transactions",
                 "tags": [
                     "Transaction"
                 ],
-                "summary": "history",
-                "operationId": "history",
+                "summary": "get transactions",
+                "operationId": "get_transactions",
                 "parameters": [
                     {
                         "type": "string",
@@ -84,7 +84,7 @@
                 }
             }
         },
-        "/user/{phone_number}": {
+        "/users/{phone_number}": {
             "get": {
                 "description": "return user",
                 "tags": [
@@ -121,11 +121,6 @@
     "definitions": {
         "inputs.Charge": {
             "type": "object",
-            "required": [
-                "code",
-                "code_type",
-                "phone_number"
-            ],
             "properties": {
                 "code": {
                     "type": "string"

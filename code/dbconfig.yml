@@ -1,4 +1,4 @@
 development:
     dialect: postgres
-    datasource: host=localhost dbname=code user=admin password=admin sslmode=disable
+    datasource: host=localhost port=5431 dbname=code user=admin password=admin sslmode=disable
     dir: migrations
