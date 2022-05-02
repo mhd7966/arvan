@@ -8,7 +8,7 @@ import (
 
 func UserRouter(app fiber.Router) {
 
-	api := app.Group("/user")
+	api := app.Group("/users")
 
 	api.Get("/:phone_number", controllers.GetUser)
 

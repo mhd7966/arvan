@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/mhd7966/arvan/code/inputs"
 	"github.com/mhd7966/arvan/code/log"
@@ -26,6 +27,15 @@ func GetChargeCode(c *fiber.Ctx) error {
 	var response models.Response
 	response.Status = "error"
 	chargeCode := c.Params("charge_code")
+
+	if exist := repositories.ExistChargeCode(chargeCode); !exist {
+		response.Message = "Charge Code Not Found"
+		log.Log.WithFields(logrus.Fields{
+			"charge_code": chargeCode,
+			"response":    response.Message,
+		}).Error("GetChargeCode. The charge code doesn't exist!")
+		return c.Status(fiber.StatusBadRequest).JSON(response)
+	}
 
 	charge, err := repositories.GetCharge(chargeCode)
 	if err != nil {
@@ -64,8 +74,7 @@ func NewChargeCode(c *fiber.Ctx) error {
 	response.Status = "error"
 
 	chargeCodeBody := new(inputs.ChargeCode)
-	err := c.BodyParser(chargeCodeBody)
-	if err != nil {
+	if err := c.BodyParser(chargeCodeBody); err != nil {
 		response.Message = "Parse Body Failed"
 		log.Log.WithFields(logrus.Fields{
 			"response": response.Message,
@@ -74,23 +83,34 @@ func NewChargeCode(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(response)
 	}
 
-	exist := repositories.ExistChargeCode(chargeCodeBody.Name)
-	if err != nil {
-		response.Message = "Check Charge Code Failed"
+	validate := validator.New()
+	if err := validate.Struct(chargeCodeBody); err != nil {
+		validateError := "error : "
+		for _, err := range err.(validator.ValidationErrors) {
+			fmt.Println(err.StructField())
+			fmt.Println(err.ActualTag())
+			fmt.Println(err.Kind())
+			fmt.Println(err.Value())
+			fmt.Println(err.Param())
+			validateError += err.StructField() + ", "
+			fmt.Println(validateError)
+			fmt.Println("---------------")
+		}
+		response.Message = "Validate Charge Info Failed"
+		response.Data = validateError
 		log.Log.WithFields(logrus.Fields{
-			"charge_code_body": chargeCodeBody,
-			"response":         response.Message,
-			"error":            err.Error(),
-		}).Error("NewChargeCode. There is a error in exist charge query!")
+			"response":       response.Message,
+			"validate_error": validateError,
+			"error":          err.Error(),
+		}).Error("NewUser. Validate charge info failed!")
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 
-	if exist {
+	if exist := repositories.ExistChargeCode(chargeCodeBody.Name); exist {
 		response.Message = "Duplicate Charge Code"
 		log.Log.WithFields(logrus.Fields{
 			"charge_code_body": chargeCodeBody,
 			"response":         response.Message,
-			"error":            err.Error(),
 		}).Error("NewChargeCode. The charge code is duplicate!")
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
@@ -146,8 +166,7 @@ func ApplyCharge(c *fiber.Ctx) error {
 
 	if charge.MaxCapacity > charge.Capacity && time.Now().Before(charge.ExpirationDate) {
 		charge.Capacity++
-		err := repositories.UpdateCapacity(charge)
-		if err != nil {
+		if err := repositories.UpdateCapacity(charge); err != nil {
 			response.Message = "Update Charge Capacity Failed"
 			log.Log.WithFields(logrus.Fields{
 				"charge":   charge,
@@ -166,8 +185,8 @@ func ApplyCharge(c *fiber.Ctx) error {
 	response.Message = "OK!"
 	response.Status = "succes"
 	log.Log.WithFields(logrus.Fields{
-		"charge_data":     response.Data,
-		"response": response.Message,
+		"charge_data": response.Data,
+		"response":    response.Message,
 	}).Info("ApplyCharge. Charge successful :)")
 	return c.Status(fiber.StatusOK).JSON(response)
 
@@ -188,9 +207,7 @@ func RollbackCharge(c *fiber.Ctx) error {
 	response.Status = "error"
 	chargeCode := c.Params("charge_code")
 
-	exist := repositories.ExistChargeCode(chargeCode)
-	
-	if !exist{
+	if exist := repositories.ExistChargeCode(chargeCode); !exist {
 		response.Message = " Charge Code Not Exist"
 		log.Log.WithFields(logrus.Fields{
 			"charge_code": chargeCode,
@@ -209,12 +226,9 @@ func RollbackCharge(c *fiber.Ctx) error {
 		}).Error("RollbackCharge. There is a error in get charge query!")
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
-	fmt.Println(charge)
-	fmt.Println(err)
 
 	charge.Capacity--
-	err = repositories.UpdateCapacity(charge)
-	if err != nil {
+	if err = repositories.UpdateCapacity(charge); err != nil {
 		response.Message = "Update Charge Capacity Failed"
 		log.Log.WithFields(logrus.Fields{
 			"charge":   charge,
@@ -229,7 +243,7 @@ func RollbackCharge(c *fiber.Ctx) error {
 	log.Log.WithFields(logrus.Fields{
 		"logs":     charge,
 		"response": response.Message,
-	}).Info("RollbackCharge.Rollback charge successful :)")
+	}).Info("RollbackCharge. Rollback charge successful :)")
 	return c.Status(fiber.StatusOK).JSON(response)
 
 }

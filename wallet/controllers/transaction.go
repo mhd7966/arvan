@@ -23,15 +23,14 @@ import (
 // @Param charge body inputs.Charge true "charge body"
 // @Success 200 {object} models.Response
 // @Failure 400 json httputil.HTTPError
-// @Router /transaction [post]
+// @Router /transactions [post]
 func Charge(c *fiber.Ctx) error {
 
 	var response models.Response
 	response.Status = "error"
 
 	charge := new(inputs.Charge)
-	err := c.BodyParser(charge)
-	if err != nil {
+	if err := c.BodyParser(charge); err != nil {
 		response.Message = "Parse Body Failed"
 		log.Log.WithFields(logrus.Fields{
 			"response": response.Message,
@@ -40,18 +39,15 @@ func Charge(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(response)
 	}
 
-	existUser := repositories.ExistUser(charge.PhoneNumber)
-	if err != nil {
-		response.Message = "Check User Info Failed"
+	if valid := ValidationPhoneNumber(charge.PhoneNumber); !valid {
+		response.Message = "Not Valid PhoneNumber "
 		log.Log.WithFields(logrus.Fields{
-			"charge_body": charge,
-			"response":    response.Message,
-			"error":       err.Error(),
-		}).Error("Charge. There is a error in check exist user query!")
+			"phone_number": charge.PhoneNumber,
+		}).Info("Charge. PhoneNumber isn't valid !")
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 
-	if !existUser {
+	if existUser := repositories.ExistUser(charge.PhoneNumber); !existUser {
 		_, err := repositories.CreateUser(charge.PhoneNumber)
 		if err != nil {
 			response.Message = "Create User Failed"
@@ -64,7 +60,7 @@ func Charge(c *fiber.Ctx) error {
 		}
 	}
 
-	exist, err := repositories.ExistTransaction(charge.PhoneNumber, charge.Code)
+	existTransaction, err := repositories.ExistTransaction(charge.PhoneNumber, charge.Code)
 	if err != nil {
 		response.Message = "Check Transaction Info Failed"
 		log.Log.WithFields(logrus.Fields{
@@ -75,11 +71,11 @@ func Charge(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 
-	if exist {
+	if existTransaction {
 		response.Message = "Duplicate Charge"
 		log.Log.WithFields(logrus.Fields{
 			"phone_number": charge.PhoneNumber,
-			"exist_code":   exist,
+			"exist_code":   existTransaction,
 		}).Info("Charge. User try duplicate code !")
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
@@ -91,7 +87,7 @@ func Charge(c *fiber.Ctx) error {
 		log.Log.WithFields(logrus.Fields{
 			"charge_code": charge.Code,
 			"error":       err,
-		}).Info("Charge. Code Charge Request Failed !")
+		}).Error("Charge. Code Charge Request Failed !")
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 
@@ -102,7 +98,7 @@ func Charge(c *fiber.Ctx) error {
 		log.Log.WithFields(logrus.Fields{
 			"charge_code": charge.Code,
 			"error":       err,
-		}).Info("Charge. Get User Failed !")
+		}).Error("Charge. Get User Failed !")
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 
@@ -116,15 +112,14 @@ func Charge(c *fiber.Ctx) error {
 		NewBalance:  user.Balance + chargeCode.Value,
 	}
 
-	err = repositories.CreateChargeTransaction(&transaction, user)
-	if err != nil {
+	if err = repositories.CreateChargeTransaction(&transaction, user); err != nil {
 		RollbackCapacityReq(charge.Code)
 		response.Message = "Create Transaction Failed"
 		log.Log.WithFields(logrus.Fields{
 			"transaction": transaction,
 			"user":        user,
 			"error":       err,
-		}).Info("Charge. Create Transaction and Update Balance Failed !")
+		}).Error("Charge. Create Transaction and Update Balance Failed !")
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 
@@ -140,41 +135,56 @@ func Charge(c *fiber.Ctx) error {
 
 }
 
-// @Param recordBody body models.RecordBody true "Record info: *Just MX record must have priority*"
-
-// history godoc
-// @Summary history
-// @Description history
-// @ID history
+// get transactions godoc
+// @Summary get transactions
+// @Description get transactions
+// @ID get_transactions
 // @Tags Transaction
 // @Param phone_number path string true "phone number of user"
 // @Success 200 {object} models.Response
 // @Failure 400 json httputil.HTTPError
-// @Router /transaction/{phone_number} [get]
-func History(c *fiber.Ctx) error {
+// @Router /transactions/{phone_number} [get]
+func GetTransactions(c *fiber.Ctx) error {
 
 	var response models.Response
 	response.Status = "error"
 	phoneNumber := c.Params("phone_number")
 
-	history, err := repositories.GetTransactions(phoneNumber)
+	if valid := ValidationPhoneNumber(phoneNumber); !valid {
+		response.Message = "Not Valid PhoneNumber "
+		log.Log.WithFields(logrus.Fields{
+			"phone_number": phoneNumber,
+		}).Info("Charge. PhoneNumber isn't valid !")
+		return c.Status(fiber.StatusBadRequest).JSON(response)
+	}
+
+	if existUser := repositories.ExistUser(phoneNumber); !existUser {
+		response.Message = "User Not Found"
+		log.Log.WithFields(logrus.Fields{
+			"phone_number": phoneNumber,
+			"exist_code":   existUser,
+		}).Info("getTransactions. User doesn't exist !")
+		return c.Status(fiber.StatusBadRequest).JSON(response)
+	}
+
+	transactions, err := repositories.GetTransactions(phoneNumber)
 	if err != nil {
 		response.Message = "Get Transaction History Failed"
 		log.Log.WithFields(logrus.Fields{
 			"phone_number": phoneNumber,
 			"response":     response.Message,
 			"error":        err.Error(),
-		}).Error("transaction. There is no contact for this request!")
+		}).Error("getTransactions. There is no contact for this request!")
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 
-	response.Data = history
+	response.Data = transactions
 	response.Message = "OK!"
 	response.Status = "succes"
 	log.Log.WithFields(logrus.Fields{
-		"transactions": history,
+		"transactions": transactions,
 		"response":     response.Message,
-	}).Info("transaction. Get transaction history successful :)")
+	}).Info("getTransactions. Get transaction history successful :)")
 	return c.Status(fiber.StatusOK).JSON(response)
 
 }

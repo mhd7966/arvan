@@ -58,8 +58,7 @@ func CreateChargeTransaction(transaction *models.Transaction, user *models.User)
 		return result.Error
 	}
 
-	err := tx.Commit().Error
-	if err != nil {
+	if err := tx.Commit().Error; err != nil {
 		log.Log.WithField("err", err).Debug("CreateChargeTransaction. Commit Transaction Have Error!")
 		return err
 	}

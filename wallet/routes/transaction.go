@@ -8,10 +8,10 @@ import (
 
 func TransactionRouter(app fiber.Router) {
 
-	api := app.Group("/transaction")
+	api := app.Group("/transactions")
 
 	api.Post("/", controllers.Charge)
-	api.Get("/:phone_number", controllers.History)
+	api.Get("/:phone_number", controllers.GetTransactions)
 
 	log.Log.Info("Transaction routes created :)")
 

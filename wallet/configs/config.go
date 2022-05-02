@@ -10,9 +10,6 @@ var Cfg Config
 
 type Config struct {
 	Debug bool `env:"DEBUG" env-default:"False"`
-	Redis struct {
-		Addr string `env:"REDIS_ADD" env-default:"redis:6379"`
-	}
 	Postgres struct {
 		Port string `env:"PG_PORT" env-default:"5432"`
 		Host string `env:"PG_HOST" env-default:"postgres"`
