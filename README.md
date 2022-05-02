@@ -16,12 +16,11 @@ $ swag init
 $ docker-compose up
 ```
 
-  For running migration, run this command (Note: The database must be up):
-```sh
+  Download sql-migrate by using:
+```
 $ go get -v github.com/rubenv/sql-migrate/...
 ```
-  then:
-```sh
+For running migration, run this command (Note: The database must be up)
+```
 $ sql-migrate up
 ```
-
